@@ -1,0 +1,36 @@
+namespace DFKAPI
+{
+    public enum Argument
+    {
+        rarity,
+        first,
+        skip,
+        order,
+        orderBy,
+        owner,
+        mainClass,
+        subClass,
+        active1,
+        active2,
+        passive1,
+        passive2,
+        strength,
+        dexterity,
+        agility,
+        vitality,
+        endurance,
+        intelligence,
+        wisdom,
+        luck,
+        mining,
+        gardening,
+        fishing,
+        foraging,
+        levelMin,
+        levelMax,
+        summonsRemainingMin,
+        summonsRemainingMax,
+        maxSummons,
+        summonedTime
+    }
+}

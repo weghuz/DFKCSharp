@@ -2,14 +2,52 @@ using Newtonsoft.Json;
 
 public class Hero
 {
+
+    public string FullName()
+    {
+        return $"{(gender == "male" ? HeroData.MaleFirstNames[firstName] : HeroData.FemaleFirstNames[firstName])} {HeroData.LastNames[lastName]}";
+    }
+
+    public string Firstname()
+    {
+        return gender == "male" ? HeroData.MaleFirstNames[firstName] : HeroData.FemaleFirstNames[firstName];
+    }
+
+    public string Lastname()
+    {
+        return HeroData.LastNames[lastName];
+    }
+
+    public decimal SalePrice(int decimals)
+    {
+        decimal fixedSalePrice = long.Parse(salePrice) / 1000000000000000000;
+        return Math.Round(fixedSalePrice, decimals);
+    }
+
     public static Hero Deserialize(string json)
     {
         return JsonConvert.DeserializeObject<Hero>(json);
     }
+
     public override string ToString()
     {
         return JsonConvert.SerializeObject(this);
     }
+
+    public int StaminaCurrent()
+    {
+        long now = DateTime.Now.Ticks / 100000000;
+        if (now >= staminaFullAt)
+        {
+            return stamina;
+        }
+        else
+        {
+            decimal staminaLeft = (int)(staminaFullAt - now) / 1200;
+            return (int)Math.Round(staminaLeft, 0);
+        }
+    }
+
     public string id { get; set; }
     public string numberId { get; set; }
     public Profile owner { get; set; }
@@ -53,6 +91,7 @@ public class Hero
     public int strengthGrowthP { get; set; }
     public int intelligenceGrowthP { get; set; }
     public int wisdomGrowthP { get; set; }
+
     public int luckGrowthP { get; set; }
     public int agilityGrowthP { get; set; }
     public int vitalityGrowthP { get; set; }

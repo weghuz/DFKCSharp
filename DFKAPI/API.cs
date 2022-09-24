@@ -69,6 +69,9 @@ namespace DFKAPI
             request.Append(GetArgument(HeroesArgument.first, args));
             request.Append("where: { ");
             request.Append(GetArgument(HeroesArgument.owner, args));
+            request.Append(GetArgument(HeroesArgument.background, args));
+            request.Append(GetArgument(HeroesArgument.profession, args));
+            request.Append(GetArgument(HeroesArgument.pjStatus, args));
             request.Append(GetArgument(HeroesArgument.rarity, args));
             request.Append(GetArgument(HeroesArgument.active1, args));
             request.Append(GetArgument(HeroesArgument.active2, args));

@@ -1,6 +1,6 @@
 namespace DFKAPI
 {
-    public enum Argument
+    public enum HeroesArgument
     {
         rarity,
         first,

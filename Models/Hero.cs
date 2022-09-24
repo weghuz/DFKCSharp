@@ -1,5 +1,15 @@
+using Newtonsoft.Json;
+
 public class Hero
 {
+    public static Hero Deserialize(string json)
+    {
+        return JsonConvert.DeserializeObject<Hero>(json);
+    }
+    public override string ToString()
+    {
+        return JsonConvert.SerializeObject(this);
+    }
     public string id { get; set; }
     public string numberId { get; set; }
     public Profile owner { get; set; }

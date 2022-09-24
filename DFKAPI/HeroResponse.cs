@@ -1,10 +1,10 @@
 namespace DFKAPI
 {
-    public class Response
+    public class HeroResponse
     {
         public class Data
         {
-            public List<Hero> heroes { get; set; }
+            public Hero hero { get; set; }
         }
         public Data data { get; set; }
     }

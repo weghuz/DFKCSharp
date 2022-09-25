@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using Newtonsoft.Json;
 using DFKAPI;
 using System;
 using System.Collections.Generic;

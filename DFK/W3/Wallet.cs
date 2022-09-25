@@ -7,9 +7,9 @@ using Nethereum.Web3.Accounts;
 
 namespace DFK.W3
 {
-    public static class Wallet
+    public static class Encrypt
     {
-        public static string CreateEncryptedAccount(string privateKey, string password)
+        public static string CreateAccount(string privateKey, string password)
         {
             var keyStoreService = new KeyStoreScryptService();
             var ecKey = new EthECKey(privateKey);
@@ -20,7 +20,7 @@ namespace DFK.W3
                 new ScryptParams { Dklen = 32, N = 32, R = 1, P = 8 });
             return keyStoreService.SerializeKeyStoreToJson(keyStore);
         }
-        public static Account GetEncryptedAccount(string password, string keyStore)
+        public static Account GetAccount(string password, string keyStore)
         {
             var keyStoreService = new KeyStoreScryptService();
             var privateKeyBytes = keyStoreService.DecryptKeyStoreFromJson(password, keyStore).ToHex(true);

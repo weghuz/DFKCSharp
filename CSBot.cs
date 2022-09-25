@@ -1,7 +1,7 @@
 using DFK.API;
 using DFK.W3;
 using Nethereum.Web3.Accounts;
-using System.IO;
+
 public class CSBot
 {
     public readonly string KEYSTORE = $"{AppDomain.CurrentDomain.BaseDirectory}\\keystore.json";
@@ -19,13 +19,13 @@ public class CSBot
             {
                 case "setkey":
                     string password = cmd.RN("Password: ");
-                    string encryptedKeyJson = Wallet.CreateEncryptedAccount(cmd.RN("Private Key: "), password);
-                    account = Wallet.GetEncryptedAccount(password, encryptedKeyJson);
+                    string encryptedKeyJson = Encrypt.CreateAccount(cmd.RN("Private Key: "), password);
+                    account = Encrypt.GetAccount(password, encryptedKeyJson);
                     password = "";
                     File.WriteAllText(KEYSTORE, encryptedKeyJson);
                     break;
                 case "getkey":
-                    account = Wallet.GetEncryptedAccount(cmd.RN("Password: "), File.ReadAllText(KEYSTORE));
+                    account = Encrypt.GetAccount(cmd.RN("Password: "), File.ReadAllText(KEYSTORE));
                     cmd.W(account.PrivateKey);
                     break;
                 case "help":
@@ -121,7 +121,7 @@ public class CSBot
 
     public async Task Run()
     {
-        account = Wallet.GetEncryptedAccount(cmd.RN("Password: "), File.ReadAllText(KEYSTORE));
+        account = Encrypt.GetAccount(cmd.RN("Password: "), File.ReadAllText(KEYSTORE));
         await Task.Delay(1);
         return;
     }

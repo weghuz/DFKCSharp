@@ -1,4 +1,4 @@
-namespace DFKAPI
+namespace DFK.API
 {
     public class HeroResponse
     {

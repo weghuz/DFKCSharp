@@ -1,7 +1,11 @@
-using DFKAPI;
-
+using DFK.API;
+using DFK.W3;
+using Nethereum.Web3.Accounts;
+using System.IO;
 public class CSBot
 {
+    public readonly string KEYSTORE = $"{AppDomain.CurrentDomain.BaseDirectory}\\keystore.json";
+    private Account account = null;
     public CSBot()
     {
         cmd.W("Welcome to C# bot CLI V1");
@@ -14,6 +18,15 @@ public class CSBot
             switch (command.ToLower().Trim())
             {
                 case "setkey":
+                    string password = cmd.RN("Password: ");
+                    string encryptedKeyJson = Wallet.CreateEncryptedAccount(cmd.RN("Private Key: "), password);
+                    account = Wallet.GetEncryptedAccount(password, encryptedKeyJson);
+                    password = "";
+                    File.WriteAllText(KEYSTORE, encryptedKeyJson);
+                    break;
+                case "getkey":
+                    account = Wallet.GetEncryptedAccount(cmd.RN("Password: "), File.ReadAllText(KEYSTORE));
+                    cmd.W(account.PrivateKey);
                     break;
                 case "help":
                     cmd.W("Commands: list, help, run, exit");
@@ -108,6 +121,7 @@ public class CSBot
 
     public async Task Run()
     {
+        account = Wallet.GetEncryptedAccount(cmd.RN("Password: "), File.ReadAllText(KEYSTORE));
         await Task.Delay(1);
         return;
     }

@@ -12,17 +12,18 @@ public class Hero
 
     public string FullName()
     {
-        return $"{(gender == "male" ? HeroData.MaleFirstNames[firstName] : HeroData.FemaleFirstNames[firstName])} {HeroData.LastNames[lastName]}";
+        return $"{Firstname() + " " + Lastname()}";
+
     }
 
     public string Firstname()
     {
-        return gender == "male" ? HeroData.MaleFirstNames[firstName] : HeroData.FemaleFirstNames[firstName];
+        return gender == "male" ? (char.ToUpper(HeroData.MaleFirstNames[firstName][0]) + HeroData.MaleFirstNames[firstName].Substring(1)) : (char.ToUpper(HeroData.FemaleFirstNames[firstName][0]) + HeroData.FemaleFirstNames[firstName].Substring(1));
     }
 
     public string Lastname()
     {
-        return HeroData.LastNames[lastName];
+        return char.ToUpper(HeroData.LastNames[lastName][0]) + HeroData.LastNames[lastName].Substring(1);
     }
 
     public decimal SalePrice(int decimals)

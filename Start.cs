@@ -1,11 +1,11 @@
-﻿namespace DFKCSharp;
-
-
-public class APIConnection
+﻿namespace DFKCSharp
 {
-    public int MyProperty { get; set; }
-    public static void Main(string[] args)
+    public class APIConnection
     {
-        CSBot bot = new();
+        public int MyProperty { get; set; }
+        public static void Main(string[] args)
+        {
+            CSBot bot = new();
+        }
     }
 }

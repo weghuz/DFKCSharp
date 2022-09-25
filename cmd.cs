@@ -1,3 +1,12 @@
+using Newtonsoft.Json;
+using DFKAPI;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 public static class cmd
 {
     public static void W(string arg)

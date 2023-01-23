@@ -1,4 +1,4 @@
-namespace DFK;
+namespace DFKCSharp.DFK;
 public class Auction
 {
     public string id { get; set; }

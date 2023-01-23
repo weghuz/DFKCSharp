@@ -1,7 +1,7 @@
 using System.Text;
 using Newtonsoft.Json;
 
-namespace DFK;
+namespace DFKCSharp.DFK;
 
 public static class API
 {
@@ -17,8 +17,8 @@ public static class API
     {
         Dictionary<HeroesArgument, string> request = new();
         request.Add(HeroesArgument.owner, address);
-        string query = API.HeroesRequestBuilder(request);
-        Hero[] heroes = await API.GetHeroes(query);
+        string query = HeroesRequestBuilder(request);
+        Hero[] heroes = await GetHeroes(query);
         return heroes;
     }
 
@@ -26,56 +26,56 @@ public static class API
     {
         var data = new StringContent(HeroRequestBuilder(id), Encoding.UTF8, "application/json");
 
-		for (int i = 0; i < 10; i++)
-		{
-			try
-			{
-				var httpData = await Client.PostAsync(URL, data);
-				var response = JsonConvert.DeserializeObject<HeroResponse>(await httpData.Content.ReadAsStringAsync());
-				return response.data.hero;
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine(e.Message);
-				await Task.Delay(i * 100);
-			}
-		}
-		return new();
+        for (int i = 0; i < 10; i++)
+        {
+            try
+            {
+                var httpData = await Client.PostAsync(URL, data);
+                var response = JsonConvert.DeserializeObject<HeroResponse>(await httpData.Content.ReadAsStringAsync());
+                return response.data.hero;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                await Task.Delay(i * 100);
+            }
+        }
+        return new();
     }
 
     public static async Task<Hero[]> GetHeroes(string request)
     {
         var data = new StringContent(request, Encoding.UTF8, "application/json");
 
-		for (int i = 0; i < 5; i++)
-		{
-			try
-			{
-				var httpData = await Client.PostAsync(URL, data);
-				var response = JsonConvert.DeserializeObject<HeroesResponse>(await httpData.Content.ReadAsStringAsync());
-				foreach (Hero hero in response.data.heroes)
-				{
+        for (int i = 0; i < 5; i++)
+        {
+            try
+            {
+                var httpData = await Client.PostAsync(URL, data);
+                var response = JsonConvert.DeserializeObject<HeroesResponse>(await httpData.Content.ReadAsStringAsync());
+                foreach (Hero hero in response.data.heroes)
+                {
                     hero.profession = hero.professionStr;
                     hero.mainClass = hero.mainClassStr;
                     hero.subClass = hero.subClassStr;
                     //switch
-					//{
+                    //{
                     //  0 => "mining",
-					//	2 => "gardening",
-					//	4 => "fishing",
+                    //	2 => "gardening",
+                    //	4 => "fishing",
                     //  6 => "foraging"
-					//	_ => "foraging"
-					//}
-				}
-				return response.data.heroes;
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine(e.Message);
-				await Task.Delay(i * i * 100);
-			}
-		}
-		return Array.Empty<Hero>();
+                    //	_ => "foraging"
+                    //}
+                }
+                return response.data.heroes;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                await Task.Delay(i * i * 100);
+            }
+        }
+        return Array.Empty<Hero>();
     }
 
     public static string HeroRequestBuilder(string id, string heroFields = null)
@@ -89,16 +89,16 @@ public static class API
                 query = request.ToString()
             });
     }
-    
+
     private static string GetArgument(HeroesArgument key, Dictionary<HeroesArgument, string> args)
     {
         KeyValuePair<HeroesArgument, string> pair = args.FirstOrDefault(pair => pair.Key == key);
         if (pair.Value is not null)
         {
-            if(Enum.GetName(typeof(HeroesArgument), pair.Key).EndsWith("_in"))
-			{
-				return $"{Enum.GetName(typeof(HeroesArgument), pair.Key)}:{pair.Value}, ";
-			}
+            if (Enum.GetName(typeof(HeroesArgument), pair.Key).EndsWith("_in"))
+            {
+                return $"{Enum.GetName(typeof(HeroesArgument), pair.Key)}:{pair.Value}, ";
+            }
             List<HeroesArgument> strings = new()
             {
                 HeroesArgument.owner,
@@ -106,14 +106,14 @@ public static class API
                 HeroesArgument.pjStatus,
                 HeroesArgument.network
             };
-            if(strings.Contains(key))
-			{
-				return $"{Enum.GetName(typeof(HeroesArgument), pair.Key)}:\"{pair.Value}\", ";
-			}
+            if (strings.Contains(key))
+            {
+                return $"{Enum.GetName(typeof(HeroesArgument), pair.Key)}:\"{pair.Value}\", ";
+            }
             else
-			{
-				return $"{Enum.GetName(typeof(HeroesArgument), pair.Key)}:{pair.Value}, ";
-			}
+            {
+                return $"{Enum.GetName(typeof(HeroesArgument), pair.Key)}:{pair.Value}, ";
+            }
         }
         return "";
     }
@@ -122,9 +122,9 @@ public static class API
     {
         StringBuilder request = new();
         request.Append("{heroes(");
-		request.Append(GetArgument(HeroesArgument.first, args));
-		request.Append(GetArgument(HeroesArgument.skip, args));
-		request.Append(GetArgument(HeroesArgument.orderBy, args));
+        request.Append(GetArgument(HeroesArgument.first, args));
+        request.Append(GetArgument(HeroesArgument.skip, args));
+        request.Append(GetArgument(HeroesArgument.orderBy, args));
         if (args.Select(arg => arg.Key).Where(arg => new HeroesArgument[] { HeroesArgument.first, HeroesArgument.orderBy }.All(allowedArg => allowedArg != arg)).Count() > 0)
         {
             request.Append("where: { ");

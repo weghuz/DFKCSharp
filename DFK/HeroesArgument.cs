@@ -1,14 +1,14 @@
-namespace DFK;
+namespace DFKCSharp.DFK;
 
 public enum HeroesArgument
 {
-	first,
-	skip,
-	order,
-	orderBy,
-	salePrice_not,
-	owner,
-	owner_in,
+    first,
+    skip,
+    order,
+    orderBy,
+    salePrice_not,
+    owner,
+    owner_in,
     network,
     mainClass,
     subClass,
@@ -30,7 +30,7 @@ public enum HeroesArgument
     summonsRemainingMax,
     levelMin,
     levelMax,
-	strength,
+    strength,
     dexterity,
     agility,
     vitality,

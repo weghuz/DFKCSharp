@@ -1,4 +1,4 @@
-namespace DFK;
+namespace DFKCSharp.DFK;
 public static class HeroData
 {
     public static string[] ClassFromGene = new string[]

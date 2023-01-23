@@ -1,7 +1,106 @@
+using Nethereum.Web3;
 using Newtonsoft.Json;
+using System.Numerics;
 
+namespace DFKCSharp.DFK;
 public class Hero
 {
+    public Hero() { }
+
+    public void DecodeGenes()
+    {
+        byte[] decodedGenes = DecodeRecessiveGenes(BigInteger.Parse(statGenes));
+        mainClass = Constants.GetClass(decodedGenes[3]);
+        subClass = Constants.GetClass(decodedGenes[7]);
+        profession = Constants.GetProfession(decodedGenes[11]);
+        statBoost1 = Constants.GetStatBoost(decodedGenes[31]);
+        statBoost2 = Constants.GetStatBoost(decodedGenes[35]);
+    }
+
+    public static byte[] DecodeRecessiveGenes(BigInteger genesBigInt)
+    {
+        var abc = "123456789abcdefghijkmnopqrstuvwx";
+        var buf = "";
+        byte bas = 32;
+
+        while (genesBigInt >= bas)
+        {
+            BigInteger mod = genesBigInt % bas;
+            buf += abc[int.Parse(mod.ToString())];
+            genesBigInt = (genesBigInt - mod) / bas;
+        }
+        buf += abc[int.Parse(genesBigInt.ToString())];
+        buf = buf.PadRight(48, '1');
+        byte[] result = new byte[48];
+        for (int i = 0; i < buf.Length; i += 1)
+        {
+            result[i] = (byte)abc.IndexOf(buf[i]);
+        }
+        return result.Reverse().ToArray();
+    }
+
+    public int XpToLevelUp()
+    {
+        var nextLevel = level + 1;
+        int xpNeeded;
+        if (nextLevel < 6)
+        {
+            xpNeeded = nextLevel * 1000;
+        }
+        else if (nextLevel < 9)
+        {
+            xpNeeded = 4000 + (nextLevel - 5) * 2000;
+        }
+        else if (level < 16)
+        {
+            xpNeeded = 12000 + (nextLevel - 9) * 4000;
+
+        }
+        else if (level < 36)
+        {
+            xpNeeded = 40000 + (nextLevel - 16) * 5000;
+        }
+        else if (level < 56)
+        {
+            xpNeeded = 140000 + (nextLevel - 36) * 7500;
+        }
+        else if (level > 56)
+        {
+            xpNeeded = 290000 + (nextLevel - 56) * 10000;
+        }
+        else
+        {
+            xpNeeded = 0;
+        }
+        return xpNeeded;
+    }
+
+    public void UpdateHeroValues(Hero h)
+    {
+        staminaFullAt = h.staminaFullAt;
+        level = h.level;
+        xp = h.xp;
+        currentQuest = h.currentQuest;
+        strength = h.strength;
+        dexterity = h.dexterity;
+        agility = h.agility;
+        vitality = h.vitality;
+        endurance = h.endurance;
+        wisdom = h.wisdom;
+        intelligence = h.intelligence;
+        luck = h.luck;
+        salePrice = h.salePrice;
+        stamina = h.stamina;
+    }
+
+    public enum Rarity
+    {
+        Common,
+        Uncommon,
+        Rare,
+        Legendary,
+        Mythic
+    }
 
     public string FullName()
     {
@@ -12,6 +111,11 @@ public class Hero
     {
         return gender == "male" ? HeroData.MaleFirstNames[firstName] : HeroData.FemaleFirstNames[firstName];
     }
+    
+    public Rarity GetRarity()
+    {
+        return (Rarity)rarity;
+    }
 
     public string Lastname()
     {
@@ -20,8 +124,13 @@ public class Hero
 
     public decimal SalePrice(int decimals)
     {
-        decimal fixedSalePrice = long.Parse(salePrice) / 1000000000000000000;
-        return Math.Round(fixedSalePrice, decimals);
+        if (salePrice is not null)
+        {
+            BigInteger price = BigInteger.Parse(salePrice);
+            decimal fixedSalePrice = Web3.Convert.FromWei(price);
+            return Math.Round(fixedSalePrice, decimals);
+        }
+        return 0;
     }
 
     public static Hero Deserialize(string json)
@@ -34,20 +143,21 @@ public class Hero
         return JsonConvert.SerializeObject(this);
     }
 
-    public int StaminaCurrent()
+    public int StaminaCurrent(int offset = 0)
     {
-        long now = DateTime.Now.Ticks / 100000000;
+        long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         if (now >= staminaFullAt)
         {
             return stamina;
         }
         else
         {
-            decimal staminaLeft = (int)(staminaFullAt - now) / 1200;
-            return (int)Math.Round(staminaLeft, 0);
+            decimal staminaLeft = (staminaFullAt - now + offset) / 1200;
+            return stamina - (int)Math.Floor(staminaLeft) - 1;
         }
     }
 
+    public bool StaminaPotioned { get; set; } = false;
     public string id { get; set; }
     public string numberId { get; set; }
     public Profile owner { get; set; }
@@ -62,14 +172,16 @@ public class Hero
     public int lastName { get; set; }
     public int shinyStyle { get; set; }
     public string mainClass { get; set; }
+    public string mainClassStr { get; set; }
     public string subClass { get; set; }
+    public string subClassStr { get; set; }
     public int summonedTime { get; set; }
     public int nextSummonTime { get; set; }
     public Hero summonerId { get; set; }
     public Hero assistantId { get; set; }
     public int summons { get; set; }
     public int maxSummons { get; set; }
-    public int staminaFullAt { get; set; }
+    public long staminaFullAt { get; set; }
     public int hpFullAt { get; set; }
     public int mpFullAt { get; set; }
     public int level { get; set; }
@@ -91,7 +203,6 @@ public class Hero
     public int strengthGrowthP { get; set; }
     public int intelligenceGrowthP { get; set; }
     public int wisdomGrowthP { get; set; }
-
     public int luckGrowthP { get; set; }
     public int agilityGrowthP { get; set; }
     public int vitalityGrowthP { get; set; }
@@ -116,15 +227,18 @@ public class Hero
     public int foraging { get; set; }
     public int fishing { get; set; }
     public string profession { get; set; }
+    public string professionStr { get; set; }
     public string passive1 { get; set; }
     public string passive2 { get; set; }
     public string active1 { get; set; }
     public string active2 { get; set; }
     public string statBoost1 { get; set; }
+    public string statBoost1StrDeprecated { get; set; }
     public string statBoost2 { get; set; }
+    public string statBoost2StrDeprecated { get; set; }
     public string statsUnknown1 { get; set; }
-    public string element { get; set; }
     public string statsUnknown2 { get; set; }
+    public string element { get; set; }
     public string gender { get; set; }
     public string headAppendage { get; set; }
     public string backAppendage { get; set; }
@@ -132,11 +246,11 @@ public class Hero
     public string hairStyle { get; set; }
     public string hairColor { get; set; }
     public string visualUnknown1 { get; set; }
+    public string visualUnknown2 { get; set; }
     public string eyeColor { get; set; }
     public string skinColor { get; set; }
     public string appendageColor { get; set; }
     public string backAppendageColor { get; set; }
-    public string visualUnknown2 { get; set; }
     public Auction assistingAuction { get; set; }
     public string assistingPrice { get; set; }
     public Auction saleAuction { get; set; }

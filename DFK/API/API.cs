@@ -1,6 +1,5 @@
 using System.Text;
 using Newtonsoft.Json;
-using PirateQuester.HeroSale.ContractDefinition;
 
 namespace DFK;
 

@@ -1,11 +1,10 @@
-namespace DFK.API
+namespace DFK;
+
+public class HeroesResponse
 {
-    public class HeroesResponse
+    public class Data
     {
-        public class Data
-        {
-            public Hero[] heroes { get; set; }
-        }
-        public Data data { get; set; }
+        public Hero[] heroes { get; set; }
     }
+    public Data data { get; set; }
 }
